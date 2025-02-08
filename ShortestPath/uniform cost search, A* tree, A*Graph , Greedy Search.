@@ -92,20 +92,26 @@ def greedy_best_first_search(graph, start, goal, heuristic):
 # Ejemplo de uso
 graph_example = {
     'A': [('B', 1), ('C', 4)],
-    'B': [('D', 2)],
-    'C': [('D', 1)],
-    'D': [('E', 3)],
-    'E': []
+    'B': [('D', 5), ('E', 2)],
+    'C': [('F', 3), ('G', 4)],
+    'D': [('H', 3)],
+    'E': [('H', 6)],
+    'F': [('I', 4)],
+    'G': [('J', 2)],
+    'H': [('I', 1)],
+    'I': [('J', 1)],
+    'J': []
 }
 
 heuristic_example = {
-    'A': 7, 'B': 6, 'C': 2, 'D': 1, 'E': 0
+    'A': 7, 'B': 6, 'C': 3, 'D': 5, 'E': 4, 'F': 2, 'G': 1, 'H': 3, 'I': 1, 'J': 0
 }
 
 start_node = 'A'
-goal_node = 'E'
+goal_node = 'J'
 
 print("Costo UCS:", uniform_cost_search(graph_example, start_node, goal_node))
 print("Costo A* Tree:", a_star_tree_search(graph_example, start_node, goal_node, heuristic_example))
 print("Costo A* Graph:", a_star_graph_search(graph_example, start_node, goal_node, heuristic_example))
 print("Encontró camino Greedy:", greedy_best_first_search(graph_example, start_node, goal_node, heuristic_example))
+
