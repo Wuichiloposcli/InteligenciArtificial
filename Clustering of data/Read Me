@@ -1,1 +1,36 @@
+# Aplicación de Aprendizaje No Supervisado en Modelos Supervisados
+
+## Descripción
+Este repositorio contiene un notebook en Python donde se aplica un enfoque de aprendizaje no supervisado para mejorar el desempeño de un modelo de clasificación supervisado.
+
+## Algoritmos Utilizados
+- **K-Means Clustering**: Se emplea para agrupar datos similares antes de aplicar el modelo supervisado.
+- **Regresión Logística**: Modelo supervisado que se entrena con y sin preprocesamiento para comparar su desempeño.
+
+## Impacto del Preprocesamiento
+El impacto de la transformación se mide comparando métricas antes y después de aplicar K-Means. Se incluyen:
+- **Accuracy Score**
+- **Matriz de Confusión**
+- **Curva ROC y AUC**
+- **Reporte de Clasificación**
+
+## Estructura del Repositorio
+```
+/
+├── Supervised_and_No_Supervised.ipynb  # Notebook con la implementación
+├── README.md                             # Documentación del proyecto
+```
+
+## Requisitos
+Para ejecutar el notebook, instala las siguientes librerías si no las tienes:
+```bash
+pip install pandas numpy scikit-learn matplotlib seaborn kagglehub
+```
+
+## Ejecución
+Abre el notebook y sigue las celdas paso a paso para ver la aplicación del algoritmo y la comparación del impacto del preprocesamiento.
+
+## Contacto
+Para dudas o mejoras, puedes abrir un issue o hacer un pull request en este repositorio.
+
 
