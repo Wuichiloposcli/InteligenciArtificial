@@ -1,0 +1,101 @@
+# ProyectoIA: Handwritten Equation Recognizer
+
+This project implements a system to recognize and evaluate handwritten mathematical equations from images using a Multi-Layer Perceptron (MLP) model built with PyTorch.
+
+## Project Overview
+
+The primary goal of this project is to take an image containing a handwritten mathematical equation, segment individual characters (digits and operators), recognize each character using a trained neural network, reconstruct the equation, and finally evaluate the mathematical expression.
+
+## Features
+
+* **Image Preprocessing**: Loads images, converts them to grayscale, inverts colors, applies thresholding, and extracts contours to isolate characters.
+* **Character Segmentation**: Individual characters are cropped from the input image, resized to 28x28 pixels, and flattened into vectors.
+* **Dataset Preparation**:
+    * Loads a custom dataset of handwritten characters (digits 0-9 and operators: +, -, \*, /, =, ., x, y, z).
+    * The dataset is expected to be organized in folders where each folder name corresponds to the character it contains (e.g., `Data/Numbers/dataset/0/`, `Data/Numbers/dataset/add/`).
+    * Data is normalized using mean and standard deviation calculated from the training set.
+* **Model**:
+    * A Multi-Layer Perceptron (MLP) is used for character classification.
+    * The model architecture consists of an input layer, one hidden layer (250 units), and an output layer (19 units, corresponding to the number of classes).
+* **Training**:
+    * The model is trained using the Adam optimizer and CrossEntropyLoss.
+    * The dataset is split into training and validation sets (80/20 split).
+    * The best performing model based on validation loss is saved to `mlp_custom_data_model1.pt`.
+* **Prediction**:
+    * A function `predict_equation_from_image` processes an input image of an equation.
+    * It segments characters, predicts each using the trained model, and reconstructs the equation string.
+    * The recognized equation is then evaluated using Python's `eval()` function.
+    * Intermediate steps, including segmented characters and their predictions with confidences, can be visualized.
+
+## File Structure
+
+* **`ProyectoIA.ipynb`**: The main Jupyter Notebook containing all the code for data loading, preprocessing, model definition, training, evaluation, and prediction.
+* **`Data/Numbers/dataset/`** (Assumed): This directory should contain subfolders for each character class, with images of those characters. The notebook specifically references path `Data/Numbers/dataset/` and image path `C:/Users/Wisp8/Desktop/Numeros/Ecuacion.png` for testing.
+* ** You can find the complete dataset in: https://www.kaggle.com/datasets/sagyamthapa/handwritten-math-symbols/data
+* **`mlp_custom_data_model1.pt`**: The saved weights of the trained MLP model.
+
+## Requirements
+
+The project uses the following Python libraries:
+
+* `os`
+* `cv2` (OpenCV)
+* `numpy`
+* `torch` (PyTorch)
+* `torch.nn`
+* `torch.optim`
+* `torch.nn.functional`
+* `torch.utils.data.TensorDataset`, `torch.utils.data.DataLoader`, `torch.utils.data.random_split`
+* `time`
+* `matplotlib.pyplot`
+* `re` (Regular Expressions)
+
+
+
+## How to Run
+
+1.  **Set up the Environment**: Ensure all required libraries are installed.
+2.  **Prepare the Dataset**:
+    * Create a directory structure like `Data/Numbers/dataset/`.
+    * Inside `dataset`, create subfolders for each character you want to recognize (e.g., `0`, `1`, ..., `9`, `add`, `sub`, `mul`, `div`, `eq`, `dec`, `x`, `y`, `z`).
+    * Place corresponding handwritten character images in these folders.
+    * Update the base path `p = 'Data/Numbers/dataset/'` in the notebook if your data is elsewhere.
+3.  **Train the Model (Optional)**:
+    * If `mlp_custom_data_model1.pt` does not exist or you want to retrain, run the notebook cells up to and including the training loop (Section 8).
+    * The training process will save the best model.
+4.  **Run Predictions**:
+    * Ensure the trained model `mlp_custom_data_model1.pt` is available.
+    * In Section 11 of the notebook, update `test_equation_image_path` to the path of the image containing the handwritten equation you want to test.
+    * Run the cells in Section 10 (function definition) and Section 11 (testing).
+    * The output will show the recognized equation, the result of its evaluation, and a plot of segmented characters with their predictions.
+
+## Key Components and Logic
+
+* **`load_images(folder)`**: Loads and preprocesses all images from a given folder. This includes grayscale conversion, inversion (to make characters white on a black background), binarization, contour detection to find the character, cropping around the largest contour with padding, resizing to 28x28, and flattening.
+* **Dataset Construction (Section 2)**: Iterates through specified subfolders, loads images using `load_images`, and assigns integer labels based on `label_map`.
+* **Normalization (Section 3 & 4)**: Images are first scaled to \[0,1] by dividing by 255.0. Then, global mean and standard deviation are calculated and applied for Z-score normalization.
+* **MLP Model (Section 5)**: A simple MLP with one hidden layer and ReLU activations.
+* **Training Loop (Section 8)**: Standard PyTorch training loop that iterates through epochs and batches, calculates loss and accuracy, performs backpropagation, and updates model weights. It saves the model with the best validation loss.
+* **`predict_equation_from_image(...)` (Section 10)**:
+    * Loads the test image.
+    * Applies similar preprocessing as `load_images` but for the entire equation image.
+    * Finds contours and sorts them by their x-coordinate to get characters in order.
+    * Includes logic to filter out nested or significantly overlapping contours to avoid processing the same character part multiple times.
+    * For each final character contour:
+        * Crops the character with padding.
+        * Resizes to 28x28.
+        * Flattens and normalizes using the mean and std from the training dataset.
+        * Converts to a PyTorch tensor and feeds it to the loaded model for prediction.
+    * The predicted character (from `idx_to_char` map) is appended to form the equation string.
+    * The resulting string is evaluated using `eval()`. A regex is used for basic validation before evaluation.
+    * Displays individual processed characters and their predicted labels with confidence scores.
+
+## Potential Improvements
+
+* **More Robust Segmentation**: The current contour-based segmentation might struggle with connected characters or complex layouts. Advanced segmentation techniques could be explored.
+* **Advanced Model Architecture**: Convolutional Neural Networks (CNNs) or Recurrent Neural Networks (RNNs, for sequence processing) typically perform better on image and sequence tasks, respectively.
+* **Data Augmentation**: To improve model generalization and robustness, apply data augmentation techniques to the training images.
+* **Error Handling in Evaluation**: The `eval()` function can be a security risk if the input is not carefully sanitized. More robust parsing and evaluation of the mathematical expression could be implemented.
+* **Handling More Symbols**: Extend the dataset and model to recognize more mathematical symbols (e.g., parentheses, square roots, exponents). The notebook mentions parentheses and 'z' in `idx_to_char` but their usage or dataset presence isn't fully detailed for 'z'.
+* **User Interface**: Develop a simple GUI or web interface for easier interaction.
+
